@@ -6,6 +6,7 @@ set +a
 
 # Default values
 MODEL_PATH=""
+REVISION=""
 LR=3e-5
 BSZ=32
 BIG_BSZ=16
@@ -19,6 +20,10 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --model_path)
             MODEL_PATH="$2"
+            shift 2
+            ;;
+        --revision)
+            REVISION="$2"
             shift 2
             ;;
         --lr)
@@ -59,7 +64,7 @@ done
 for task in {boolq,multirc}; do
     echo $task
 
-    python -m evaluation_pipeline.finetune.run \
+    python -m evaluation_pipeline.finetune.run ${REVISION:+--revision_name "$REVISION"} \
         --model_name_or_path "$MODEL_PATH" \
         --train_data "evaluation_data/full_eval/glue_filtered/$task.train.jsonl" \
         --valid_data "evaluation_data/full_eval/glue_filtered/$task.valid.jsonl" \
@@ -82,7 +87,7 @@ for task in {boolq,multirc}; do
         $WANDB_FLAG
 done
 
-python -m evaluation_pipeline.finetune.run \
+python -m evaluation_pipeline.finetune.run ${REVISION:+--revision_name "$REVISION"} \
     --model_name_or_path "$MODEL_PATH" \
     --train_data "evaluation_data/full_eval/glue_filtered/rte.train.jsonl" \
     --valid_data "evaluation_data/full_eval/glue_filtered/rte.valid.jsonl" \
@@ -104,7 +109,7 @@ python -m evaluation_pipeline.finetune.run \
     --take_final \
     $WANDB_FLAG
 
-python -m evaluation_pipeline.finetune.run \
+python -m evaluation_pipeline.finetune.run ${REVISION:+--revision_name "$REVISION"} \
     --model_name_or_path "$MODEL_PATH" \
     --train_data "evaluation_data/full_eval/glue_filtered/wsc.train.jsonl" \
     --valid_data "evaluation_data/full_eval/glue_filtered/wsc.valid.jsonl" \
@@ -128,7 +133,7 @@ python -m evaluation_pipeline.finetune.run \
 
 for task in {mrpc,qqp}; do
         
-    python -m evaluation_pipeline.finetune.run \
+    python -m evaluation_pipeline.finetune.run ${REVISION:+--revision_name "$REVISION"} \
         --model_name_or_path "$MODEL_PATH" \
         --train_data "evaluation_data/full_eval/glue_filtered/$task.train.jsonl" \
         --valid_data "evaluation_data/full_eval/glue_filtered/$task.valid.jsonl" \
@@ -151,7 +156,7 @@ for task in {mrpc,qqp}; do
         $WANDB_FLAG
 done
 
-python -m evaluation_pipeline.finetune.run \
+python -m evaluation_pipeline.finetune.run ${REVISION:+--revision_name "$REVISION"} \
     --model_name_or_path "$MODEL_PATH" \
     --train_data "evaluation_data/full_eval/glue_filtered/mnli.train.jsonl" \
     --valid_data "evaluation_data/full_eval/glue_filtered/mnli.valid.jsonl" \
